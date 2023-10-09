@@ -112,7 +112,7 @@ class MongoDBCache(BaseCache):
             expires = None
         coll = self._get_collection()
         pickled = pickle.dumps(value, pickle.HIGHEST_PROTOCOL)
-        encoded = base64.encodestring(pickled).strip()
+        encoded = base64.decodebytes(pickled).strip()
 
         if mode == 'add' and self.has_key(key):
             return False
@@ -151,7 +151,7 @@ class MongoDBCache(BaseCache):
         if not data:
             return default
 
-        unencoded = base64.decodestring(data['data'])
+        unencoded = base64.decodebytes(data['data'])
         unpickled = pickle.loads(unencoded)
 
         return unpickled
@@ -183,7 +183,7 @@ class MongoDBCache(BaseCache):
             }
         )
         for result in data:
-            unencoded = base64.decodestring(result['data'])
+            unencoded = base64.decodebytes(result['data'])
             unpickled = pickle.loads(unencoded)
             out[parsed_keys[result['key']]] = unpickled
 
